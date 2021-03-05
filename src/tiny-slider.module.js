@@ -1,3 +1,7 @@
+const SERVERSIDE_WINDOW_WIDTH = 300;
+const SERVERSIDE_WINDOW_HEIGHT = 300;
+import { isServer } from './helpers/isServer.js';
+
 // Object.keys
 if (!Object.keys) {
   Object.keys = function(object) {
@@ -12,7 +16,7 @@ if (!Object.keys) {
 }
 
 // ChildNode.remove
-if(!("remove" in Element.prototype)){
+if (!isServer && !("remove" in Element.prototype)) {
   Element.prototype.remove = function(){
     if(this.parentNode) {
       this.parentNode.removeChild(this);
@@ -111,8 +115,8 @@ export var tns = function(options) {
     nonce: false
   }, options || {});
 
-  var doc = document,
-      win = window,
+  var doc = isServer ? null : document,
+      win = isServer ? null : window,
       KEYS = {
         ENTER: 13,
         SPACE: 32,
@@ -120,7 +124,7 @@ export var tns = function(options) {
         RIGHT: 39
       },
       tnsStorage = {},
-      localStorageAccess = options.useLocalStorage;
+      localStorageAccess = isServer ? false : options.useLocalStorage;
 
   if (localStorageAccess) {
     // check browser version and local storage access
@@ -531,7 +535,7 @@ export var tns = function(options) {
   }
 
   function getWindowWidth () {
-    return win.innerWidth || doc.documentElement.clientWidth || doc.body.clientWidth;
+    return isServer ? SERVERSIDE_WINDOW_WIDTH : win.innerWidth || doc.documentElement.clientWidth || doc.body.clientWidth;
   }
 
   function getInsertPosition (pos) {
